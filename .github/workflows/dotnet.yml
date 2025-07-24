@@ -5,7 +5,9 @@ name: .NET
 
 on:
   push:
-    branches: [ "main" ]
+    branches: 
+      - "main"
+      - features/*
   pull_request:
     branches: [ "main" ]
 
@@ -28,13 +30,45 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
 
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-
-    - name: Publish test report
-      uses: phoenix-actions/test-reporting@v15
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
       with:
-        name: Test report
-        path: ./**/TestResults/*.trx
-        reporter: dotnet-trx
-        output-to: step-summary
+        name: build-artifacts
+        path: |
+          **/bin/
+          **/obj/
+          **/*.dll
+          **/*.exe
+          **/*.pdb
+        retention-days: 1
+
+  test:
+    needs: build
+    name: Test - ${{ matrix.test-suite.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      matrix:
+        test-suite:
+          - name: "Test 1"
+            filters: "FullyQualifiedName~MstTrx1"
+          - name: "Test 2"
+            filters: "FullyQualifiedName~MstTrx2"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Test
+        shell: pwsh
+        run: | 
+          dotnet test --no-build --verbosity normal `
+            --filter ${{ matrix.test-suite.filters }}
