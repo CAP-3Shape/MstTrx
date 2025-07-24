@@ -47,6 +47,10 @@ jobs:
           **/*.exe
           **/*.pdb
           **/*.json
+          **/*.cs
+          **/*.csproj
+          **/*.sln
+          **/*.config
         retention-days: 1
 
     - name: Pre-test 1
@@ -76,11 +80,6 @@ jobs:
             filters: "--filter-namespace 'MstTrx2*'"
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
     - name: List contents before download
       shell: pwsh
       run: |
