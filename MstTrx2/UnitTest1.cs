@@ -1,3 +1,5 @@
+using Xunit;
+
 namespace MstTrx2
 {
     public class UnitTest1
