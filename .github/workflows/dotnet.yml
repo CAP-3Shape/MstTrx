@@ -80,6 +80,11 @@ jobs:
             filters: "--filter-namespace 'MstTrx2*'"
 
     steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
     - name: List contents before download
       shell: pwsh
       run: |
