@@ -86,7 +86,19 @@ jobs:
         Get-ChildItem -Recurse 'D:\a\MstTrx\MstTrx' `
           | ForEach-Object { Write-Host $_.FullName }
 
-    - name: Test
+    - name: Test after download
+      shell: pwsh
+      run: | 
+        dotnet test --no-build --verbosity normal `
+          -- ${{ matrix.test-suite.filters }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Test after build
       shell: pwsh
       run: | 
         dotnet test --no-build --verbosity normal `
