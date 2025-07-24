@@ -10,6 +10,8 @@
 
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
+    <TestingPlatformCaptureOutput>false</TestingPlatformCaptureOutput>
     <TestingPlatformCommandLineArguments>--report-trx --ignore-exit-code 8</TestingPlatformCommandLineArguments>
   </PropertyGroup>
 
