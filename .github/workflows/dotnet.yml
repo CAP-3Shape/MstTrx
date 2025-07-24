@@ -68,7 +68,7 @@ jobs:
   test:
     needs: build
     name: Test - ${{ matrix.test-suite.name }}
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 30
 
     strategy:
