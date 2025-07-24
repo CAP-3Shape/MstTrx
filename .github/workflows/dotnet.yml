@@ -33,7 +33,7 @@ jobs:
     - name: List contents
       shell: pwsh
       run: |
-        Get-ChildItem -Recurse '/home/runner/work/MstTrx/MstTrx' `
+        Get-ChildItem -Recurse 'D:\a\MstTrx\MstTrx' `
           | ForEach-Object { Write-Host $_.FullName }
 
     - name: Upload build artifacts
@@ -85,12 +85,6 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: List contents before download
-      shell: pwsh
-      run: |
-        Get-ChildItem -Recurse '/home/runner/work/MstTrx/MstTrx' `
-          | ForEach-Object { Write-Host $_.FullName }
-
     - name: Download build artifacts
       uses: actions/download-artifact@v4
       with:
@@ -99,7 +93,7 @@ jobs:
     - name: List contents after download
       shell: pwsh
       run: |
-        Get-ChildItem -Recurse '/home/runner/work/MstTrx/MstTrx' `
+        Get-ChildItem -Recurse 'D:\a\MstTrx\MstTrx' `
           | ForEach-Object { Write-Host $_.FullName }
 
     - name: Test
