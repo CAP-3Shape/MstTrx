@@ -52,13 +52,13 @@ jobs:
       shell: pwsh
       run: | 
         dotnet test --no-build --verbosity normal `
-          --filter FullyQualifiedName~MstTrx1
+          -- --filter-namespace 'MstTrx1*'
 
     - name: Pre-test 2
       shell: pwsh
       run: | 
         dotnet test --no-build --verbosity normal `
-          --filter FullyQualifiedName~MstTrx2
+          -- --filter-namespace 'MstTrx2*'
 
   test:
     needs: build
@@ -70,9 +70,9 @@ jobs:
       matrix:
         test-suite:
           - name: "Test 1"
-            filters: "FullyQualifiedName~MstTrx1"
+            filters: "--filter-namespace 'MstTrx1*'"
           - name: "Test 2"
-            filters: "FullyQualifiedName~MstTrx2"
+            filters: "--filter-namespace 'MstTrx2*'"
 
     steps:
     - name: Checkout
@@ -95,7 +95,7 @@ jobs:
       shell: pwsh
       run: | 
         dotnet test --no-build --verbosity normal `
-          --filter ${{ matrix.test-suite.filters }}
+          -- ${{ matrix.test-suite.filters }}
 
     - name: Publish test report
       uses: phoenix-actions/test-reporting@v15
