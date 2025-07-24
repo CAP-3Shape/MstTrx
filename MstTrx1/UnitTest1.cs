@@ -5,9 +5,12 @@ namespace MstTrx1
     public class UnitTest1
     {
         [Fact]
-        public void Test1()
+        public void Test1A()
         {
-            // Do nothing; always succeed.
+        }
+        [Fact]
+        public void Test1B()
+        {
         }
     }
 }
