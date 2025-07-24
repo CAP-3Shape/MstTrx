@@ -81,12 +81,18 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: List contents before download
+      shell: pwsh
+      run: |
+        Get-ChildItem -Recurse '/home/runner/work/MstTrx/MstTrx' `
+          | ForEach-Object { Write-Host $_.FullName }
+
     - name: Download build artifacts
       uses: actions/download-artifact@v4
       with:
         name: build-artifacts
 
-    - name: List contents
+    - name: List contents after download
       shell: pwsh
       run: |
         Get-ChildItem -Recurse '/home/runner/work/MstTrx/MstTrx' `
