@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace MstTrx
+namespace MstTrx1
 {
     public class UnitTest1
     {
