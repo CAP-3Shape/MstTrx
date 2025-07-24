@@ -23,7 +23,7 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore  -c Debug -f net8.0
 
     - name: List contents
       shell: pwsh
@@ -51,13 +51,13 @@ jobs:
     - name: Pre-test 1
       shell: pwsh
       run: | 
-        dotnet test --no-build --verbosity normal `
+        dotnet test --no-build --verbosity normal -c Debug -f net8.0 `
           -- --filter-namespace 'MstTrx1*'
 
     - name: Pre-test 2
       shell: pwsh
       run: | 
-        dotnet test --no-build --verbosity normal `
+        dotnet test --no-build --verbosity normal -c Debug -f net8.0 `
           -- --filter-namespace 'MstTrx2*'
 
   test:
@@ -89,19 +89,19 @@ jobs:
     - name: Test after download
       shell: pwsh
       run: | 
-        dotnet test --no-build --verbosity normal `
+        dotnet test --no-build --verbosity normal -c Debug -f net8.0 `
           -- ${{ matrix.test-suite.filters }}
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore -c Debug -f net8.0
 
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore -c Debug -f net8.0
 
     - name: Test after build
       shell: pwsh
       run: | 
-        dotnet test --no-build --verbosity normal `
+        dotnet test --no-build --verbosity normal -c Debug -f net8.0 `
           -- ${{ matrix.test-suite.filters }}
 
     - name: Publish test report
