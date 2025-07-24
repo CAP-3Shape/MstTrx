@@ -91,23 +91,3 @@ jobs:
       run: | 
         dotnet test --no-build --verbosity normal -c Debug -f net8.0 `
           -- ${{ matrix.test-suite.filters }}
-
-    - name: Restore dependencies
-      run: dotnet restore -c Debug -f net8.0
-
-    - name: Build
-      run: dotnet build --no-restore -c Debug -f net8.0
-
-    - name: Test after build
-      shell: pwsh
-      run: | 
-        dotnet test --no-build --verbosity normal -c Debug -f net8.0 `
-          -- ${{ matrix.test-suite.filters }}
-
-    - name: Publish test report
-      uses: phoenix-actions/test-reporting@v15
-      with:
-        name: "Test Report - ${{ matrix.test-suite.name }}"
-        path: ./**/TestResults/*.trx
-        reporter: dotnet-trx
-        output-to: step-summary
