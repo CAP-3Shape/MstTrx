@@ -30,6 +30,10 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
 
+    - name: List contents
+      shell: pwsh
+      run: Get-ChildItem -Recurse
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -57,26 +61,30 @@ jobs:
             filters: "FullyQualifiedName~MstTrx2"
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifacts
 
-      - name: Test
-        shell: pwsh
-        run: | 
-          dotnet test --no-build --verbosity normal `
-            --filter ${{ matrix.test-suite.filters }}
+    - name: List contents
+      shell: pwsh
+      run: Get-ChildItem -Recurse
 
-      - name: Publish test report
-        uses: phoenix-actions/test-reporting@v15
-        with:
-          name: "Test Report - ${{ matrix.test-suite.name }}"
-          path: ./**/TestResults/*.trx
-          reporter: dotnet-trx
-          output-to: step-summary
+    - name: Test
+      shell: pwsh
+      run: | 
+        dotnet test --no-build --verbosity normal `
+          --filter ${{ matrix.test-suite.filters }}
+
+    - name: Publish test report
+      uses: phoenix-actions/test-reporting@v15
+      with:
+        name: "Test Report - ${{ matrix.test-suite.name }}"
+        path: ./**/TestResults/*.trx
+        reporter: dotnet-trx
+        output-to: step-summary
