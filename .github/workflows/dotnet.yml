@@ -72,3 +72,11 @@ jobs:
         run: | 
           dotnet test --no-build --verbosity normal `
             --filter ${{ matrix.test-suite.filters }}
+
+      - name: Publish test report
+        uses: phoenix-actions/test-reporting@v15
+        with:
+          name: "Test Report - ${{ matrix.test-suite.name }}"
+          path: ./**/TestResults/*.trx
+          reporter: dotnet-trx
+          output-to: step-summary
