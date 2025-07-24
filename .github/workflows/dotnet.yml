@@ -32,7 +32,7 @@ jobs:
 
     - name: List contents
       shell: pwsh
-      run: Get-ChildItem -Recurse
+      run: Get-ChildItem -Recurse '/home/runner/work/MstTrx/MstTrx'
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
@@ -73,7 +73,7 @@ jobs:
 
     - name: List contents
       shell: pwsh
-      run: Get-ChildItem -Recurse
+      run: Get-ChildItem -Recurse '/home/runner/work/MstTrx/MstTrx'
 
     - name: Test
       shell: pwsh
