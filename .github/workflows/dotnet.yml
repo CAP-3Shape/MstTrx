@@ -46,6 +46,18 @@ jobs:
           **/*.pdb
         retention-days: 1
 
+    - name: Test 1
+      shell: pwsh
+      run: | 
+        dotnet test --no-build --verbosity normal `
+          --filter FullyQualifiedName~MstTrx1
+
+    - name: Test 2
+      shell: pwsh
+      run: | 
+        dotnet test --no-build --verbosity normal `
+          --filter FullyQualifiedName~MstTrx2
+
   test:
     needs: build
     name: Test - ${{ matrix.test-suite.name }}
