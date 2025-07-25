@@ -50,12 +50,14 @@ jobs:
 
     - name: Pre-test 1
       shell: pwsh
+      working-directory: .
       run: | 
         dotnet test --no-build --verbosity normal -c Debug -f net8.0 `
           -- --filter-namespace 'MstTrx1*'
 
     - name: Pre-test 2
       shell: pwsh
+      working-directory: .
       run: | 
         dotnet test --no-build --verbosity normal -c Debug -f net8.0 `
           -- --filter-namespace 'MstTrx2*'
@@ -88,6 +90,7 @@ jobs:
 
     - name: Test after download
       shell: pwsh
+      working-directory: .
       run: | 
         dotnet test --no-build --verbosity normal -c Debug -f net8.0 `
           -- ${{ matrix.test-suite.filters }}
