@@ -19,48 +19,38 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
     - name: Restore dependencies
       run: dotnet restore
 
     - name: Build
       run: dotnet build --no-restore  -c Debug -f net8.0
 
-    - name: List contents
+    - name: List built test runtime outputs
       shell: pwsh
       run: |
-        Get-ChildItem -Recurse 'D:\a\MstTrx\MstTrx' `
-          | ForEach-Object { Write-Host $_.FullName }
+        Get-ChildItem -Recurse 'MstTrx1/bin/Debug/net8.0' | ForEach-Object { Write-Host $_.FullName }
+        Get-ChildItem -Recurse 'MstTrx2/bin/Debug/net8.0' | ForEach-Object { Write-Host $_.FullName }
+
+    - name: Stage deterministic test artifacts
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Force -Path 'artifacts/MstTrx1' | Out-Null
+        New-Item -ItemType Directory -Force -Path 'artifacts/MstTrx2' | Out-Null
+        Copy-Item -Recurse -Force 'MstTrx1/bin/Debug/net8.0' 'artifacts/MstTrx1/'
+        Copy-Item -Recurse -Force 'MstTrx2/bin/Debug/net8.0' 'artifacts/MstTrx2/'
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: build-artifacts
         path: |
-          **/bin/
-          **/obj/
-          **/*.dll
-          **/*.exe
-          **/*.pdb
-          **/*.json
-          **/*.cs
-          **/*.csproj
-          **/*.slnx
-          **/*.config
+          artifacts/**
         retention-days: 1
-
-    - name: Pre-test 1
-      shell: pwsh
-      working-directory: .
-      run: | 
-        dotnet test --no-build --verbosity normal -c Debug -f net8.0 `
-          -- --filter-namespace 'MstTrx1*'
-
-    - name: Pre-test 2
-      shell: pwsh
-      working-directory: .
-      run: | 
-        dotnet test --no-build --verbosity normal -c Debug -f net8.0 `
-          -- --filter-namespace 'MstTrx2*'
 
   test:
     needs: build
@@ -72,25 +62,30 @@ jobs:
       matrix:
         test-suite:
           - name: "Test 1"
-            filters: "--filter-namespace 'MstTrx1*'"
+            executable: "MstTrx1/net8.0/MstTrx1.exe"
+            filterNamespace: "MstTrx1*"
           - name: "Test 2"
-            filters: "--filter-namespace 'MstTrx2*'"
+            executable: "MstTrx2/net8.0/MstTrx2.exe"
+            filterNamespace: "MstTrx2*"
 
     steps:
     - name: Download build artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: build-artifacts
+        path: artifacts
 
     - name: List contents after download
       shell: pwsh
       run: |
-        Get-ChildItem -Recurse 'D:\a\MstTrx\MstTrx' `
+        Get-ChildItem -Recurse 'artifacts' `
           | ForEach-Object { Write-Host $_.FullName }
 
-    - name: Test after download
+    - name: Run tests from built artifact
       shell: pwsh
-      working-directory: .
-      run: | 
-        dotnet test --no-build --verbosity normal -c Debug -f net8.0 `
-          -- ${{ matrix.test-suite.filters }}
+      run: |
+        $exe = Join-Path $PWD "artifacts/${{ matrix.test-suite.executable }}"
+        if (-not (Test-Path $exe)) {
+          throw "Test executable not found: $exe"
+        }
+        & $exe --filter-namespace "${{ matrix.test-suite.filterNamespace }}"
