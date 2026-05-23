@@ -44,7 +44,7 @@ jobs:
           **/*.json
           **/*.cs
           **/*.csproj
-          **/*.sln
+          **/*.slnx
           **/*.config
         retention-days: 1
 
