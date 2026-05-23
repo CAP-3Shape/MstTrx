@@ -12,6 +12,7 @@ on:
     branches: [ "main" ]
 
 jobs:
+  # Build once and publish reusable test runtime outputs for downstream jobs.
   build:
 
     runs-on: windows-latest
@@ -36,6 +37,7 @@ jobs:
         Get-ChildItem -Recurse 'MstTrx1/bin/Debug/net8.0' | ForEach-Object { Write-Host $_.FullName }
         Get-ChildItem -Recurse 'MstTrx2/bin/Debug/net8.0' | ForEach-Object { Write-Host $_.FullName }
 
+    # Stage into a stable folder structure so child jobs can resolve paths deterministically.
     - name: Stage deterministic test artifacts
       shell: pwsh
       run: |
@@ -44,6 +46,7 @@ jobs:
         Copy-Item -Recurse -Force 'MstTrx1/bin/Debug/net8.0' 'artifacts/MstTrx1/'
         Copy-Item -Recurse -Force 'MstTrx2/bin/Debug/net8.0' 'artifacts/MstTrx2/'
 
+    # Upload only the staged runtime outputs needed by child test jobs.
     - name: Upload build artifacts
       uses: actions/upload-artifact@v5
       with:
@@ -52,6 +55,7 @@ jobs:
           artifacts/**
         retention-days: 1
 
+  # Fan out test execution while reusing the single build output from the build job.
   test:
     needs: build
     name: Test - ${{ matrix.test-suite.name }}
@@ -60,6 +64,7 @@ jobs:
 
     strategy:
       matrix:
+        # One matrix entry per test executable/namespace slice.
         test-suite:
           - name: "Test 1"
             executable: "MstTrx1/net8.0/MstTrx1.exe"
@@ -69,6 +74,7 @@ jobs:
             filterNamespace: "MstTrx2*"
 
     steps:
+    # Download build output produced by the parent job.
     - name: Download build artifacts
       uses: actions/download-artifact@v5
       with:
@@ -81,6 +87,7 @@ jobs:
         Get-ChildItem -Recurse 'artifacts' `
           | ForEach-Object { Write-Host $_.FullName }
 
+    # Run the built test executable directly to avoid adapter discovery issues in child jobs.
     - name: Run tests from built artifact
       shell: pwsh
       run: |
